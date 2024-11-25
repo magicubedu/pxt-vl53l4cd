@@ -1,178 +1,385 @@
 /**
- * Provides blocks for the TSL2561 light sensor.
- * Reference: https://github.com/Seeed-Studio/Grove_Digital_Light_Sensor
+ * Provides blocks for the Time of Flight Distance Sensor.
  */
-//% color=#006633 icon="\uf042" block="Digital Light Sensor"
-namespace DigitalLightSensor {
-    const TSL2561_Control = 0x80
-    const TSL2561_Timing = 0x81
-    const TSL2561_Interrupt = 0x86
-    const TSL2561_Channal0L = 0x8C
-    const TSL2561_Channal0H = 0x8D
-    const TSL2561_Channal1L = 0x8E
-    const TSL2561_Channal1H = 0x8F
+//% color=#006633 icon="\uf042" block="VL53L4CD"
+namespace VL53L4CD {
+    const VL53L4CD_NONE = 0;
+    const VL53L4CD_XTALK_FAILED = 253;
+    const VL53L4CD_INVALID_ARGUMENT = 254;
+    const VL53L4CD_TIMEOUT = 255;
 
-    const TSL2561_Address = 0x29       //device address
+    // Define constants for register addresses  
+    const VL53L4CD_SOFT_RESET = 0x0000;
+    const VL53L4CD_I2C_SLAVE_deviceAddress = 0x0001;
+    const VL53L4CD_VHV_CONFIG_TIMEOUT_MACROP_LOOP_BOUND = 0x0008;
+    const VL53L4CD_XTALK_PLANE_OFFSET_KCPS = 0x0016;
+    const VL53L4CD_XTALK_X_PLANE_GRADIENT_KCPS = 0x0018;
+    const VL53L4CD_XTALK_Y_PLANE_GRADIENT_KCPS = 0x001A;
+    const VL53L4CD_RANGE_OFFSET_MM = 0x001E;
+    const VL53L4CD_INNER_OFFSET_MM = 0x0020;
+    const VL53L4CD_OUTER_OFFSET_MM = 0x0022;
+    const VL53L4CD_GPIO_HV_MUX_CTRL = 0x0030;
+    const VL53L4CD_GPIO_TIO_HV_STATUS = 0x0031;
+    const VL53L4CD_SYSTEM_INTERRUPT = 0x0046;
+    const VL53L4CD_RANGE_CONFIG_A = 0x005E;
+    const VL53L4CD_RANGE_CONFIG_B = 0x0061;
+    const VL53L4CD_RANGE_CONFIG_SIGMA_THRESH = 0x0064;
+    const VL53L4CD_MIN_COUNT_RATE_RTN_LIMIT_MCPS = 0x0066;
+    const VL53L4CD_INTERMEASUREMENT_MS = 0x006C;
+    const VL53L4CD_THRESH_HIGH = 0x0072;
+    const VL53L4CD_THRESH_LOW = 0x0074;
+    const VL53L4CD_SYSTEM_INTERRUPT_CLEAR = 0x0086;
+    const VL53L4CD_SYSTEM_START = 0x0087;
+    const VL53L4CD_RESULT_RANGE_STATUS = 0x0089;
+    const VL53L4CD_RESULT_SPAD_NB = 0x008C;
+    const VL53L4CD_RESULT_SIGNAL_RATE = 0x008E;
+    const VL53L4CD_RESULT_AMBIENT_RATE = 0x0090;
+    const VL53L4CD_RESULT_SIGMA = 0x0092;
+    const VL53L4CD_RESULT_DISTANCE = 0x0096;
+    const VL53L4CD_RESULT_OSC_CALIBRATE_VAL = 0x00DE;
+    const VL53L4CD_FIRMWARE_SYSTEM_STATUS = 0x00E5;
+    const VL53L4CD_IDENTIFICATION_MODEL_ID = 0x010F;
 
-    const LUX_SCALE = 14           // scale by 2^14
-    const RATIO_SCALE = 9          // scale ratio by 2^9
-    const CH_SCALE = 10            // scale channel values by 2^10
-    const CHSCALE_TINT0 = 0x7517   // 322/11 * 2^CH_SCALE
-    const CHSCALE_TINT1 = 0x0fe7   // 322/81 * 2^CH_SCALE
+    const VL53L4CD_DEFAULT_CONFIGURATION: number[] = [
+        // Populate the array with the same values as in C code  
+        // Conditional compilation is not available in TypeScript, so handle it programmatically  
+        0x00, // 0x2d  
+        0x00, // 0x2e  
+        0x00, // 0x2f  
+        0x11, // 0x30  
+        0x02, // 0x31  
+        0x00, // 0x32  
+        0x02, // 0x33  
+        0x08, // 0x34  
+        0x00, // 0x35  
+        0x08, // 0x36  
+        0x10, // 0x37  
+        0x01, // 0x38  
+        0x01, // 0x39  
+        0x00, // 0x3a  
+        0x00, // 0x3b  
+        0x00, // 0x3c  
+        0x00, // 0x3d  
+        0xff, // 0x3e  
+        0x00, // 0x3f  
+        0x0F, // 0x40  
+        0x00, // 0x41  
+        0x00, // 0x42  
+        0x00, // 0x43  
+        0x00, // 0x44  
+        0x00, // 0x45  
+        0x20, // 0x46  
+        0x0b, // 0x47  
+        0x00, // 0x48  
+        0x00, // 0x49  
+        0x02, // 0x4a  
+        0x14, // 0x4b  
+        0x21, // 0x4c  
+        0x00, // 0x4d  
+        0x00, // 0x4e  
+        0x05, // 0x4f  
+        0x00, // 0x50  
+        0x00, // 0x51  
+        0x00, // 0x52  
+        0x00, // 0x53  
+        0xc8, // 0x54  
+        0x00, // 0x55  
+        0x00, // 0x56  
+        0x38, // 0x57  
+        0xff, // 0x58  
+        0x01, // 0x59  
+        0x00, // 0x5a  
+        0x08, // 0x5b  
+        0x00, // 0x5c  
+        0x00, // 0x5d  
+        0x01, // 0x5e  
+        0xcc, // 0x5f  
+        0x07, // 0x60  
+        0x01, // 0x61  
+        0xf1, // 0x62  
+        0x05, // 0x63  
+        0x00, // 0x64  
+        0xa0, // 0x65  
+        0x00, // 0x66  
+        0x80, // 0x67  
+        0x08, // 0x68  
+        0x38, // 0x69  
+        0x00, // 0x6a  
+        0x00, // 0x6b  
+        0x00, // 0x6c  
+        0x00, // 0x6d  
+        0x0f, // 0x6e  
+        0x89, // 0x6f  
+        0x00, // 0x70  
+        0x00, // 0x71  
+        0x00, // 0x72  
+        0x00, // 0x73  
+        0x00, // 0x74  
+        0x00, // 0x75  
+        0x00, // 0x76  
+        0x01, // 0x77  
+        0x07, // 0x78  
+        0x05, // 0x79  
+        0x06, // 0x7a  
+        0x06, // 0x7b  
+        0x00, // 0x7c  
+        0x00, // 0x7d  
+        0x02, // 0x7e  
+        0xc7, // 0x7f  
+        0xff, // 0x80  
+        0x9B, // 0x81  
+        0x00, // 0x82  
+        0x00, // 0x83  
+        0x00, // 0x84  
+        0x01, // 0x85  
+        0x00, // 0x86  
+        0x00  // 0x87  
+    ];
 
-    const K1T = 0x0040   // 0.125 * 2^RATIO_SCALE
-    const B1T = 0x01f2   // 0.0304 * 2^LUX_SCALE
-    const M1T = 0x01be   // 0.0272 * 2^LUX_SCALE
-    const K2T = 0x0080   // 0.250 * 2^RATIO_SCA
-    const B2T = 0x0214   // 0.0325 * 2^LUX_SCALE
-    const M2T = 0x02d1   // 0.0440 * 2^LUX_SCALE
-    const K3T = 0x00c0   // 0.375 * 2^RATIO_SCALE
-    const B3T = 0x023f   // 0.0351 * 2^LUX_SCALE
-    const M3T = 0x037b   // 0.0544 * 2^LUX_SCALE
-    const K4T = 0x0100   // 0.50 * 2^RATIO_SCALE
-    const B4T = 0x0270   // 0.0381 * 2^LUX_SCALE
-    const M4T = 0x03fe   // 0.0624 * 2^LUX_SCALE
-    const K5T = 0x0138   // 0.61 * 2^RATIO_SCALE
-    const B5T = 0x016f   // 0.0224 * 2^LUX_SCALE
-    const M5T = 0x01fc   // 0.0310 * 2^LUX_SCALE
-    const K6T = 0x019a   // 0.80 * 2^RATIO_SCALE
-    const B6T = 0x00d2   // 0.0128 * 2^LUX_SCALE
-    const M6T = 0x00fb   // 0.0153 * 2^LUX_SCALE
-    const K7T = 0x029a   // 1.3 * 2^RATIO_SCALE
-    const B7T = 0x0018   // 0.00146 * 2^LUX_SCALE
-    const M7T = 0x0012   // 0.00112 * 2^LUX_SCALE
-    const K8T = 0x029a   // 1.3 * 2^RATIO_SCALE
-    const B8T = 0x0000   // 0.000 * 2^LUX_SCALE
-    const M8T = 0x0000   // 0.000 * 2^LUX_SCALE
+    export class VL53L4CD {
+        deviceAddress: number;
+        isInitialized: boolean;
 
-    const K1C = 0x0043   // 0.130 * 2^RATIO_SCALE
-    const B1C = 0x0204   // 0.0315 * 2^LUX_SCALE
-    const M1C = 0x01ad   // 0.0262 * 2^LUX_SCALE
-    const K2C = 0x0085   // 0.260 * 2^RATIO_SCALE
-    const B2C = 0x0228   // 0.0337 * 2^LUX_SCALE
-    const M2C = 0x02c1   // 0.0430 * 2^LUX_SCALE
-    const K3C = 0x00c8   // 0.390 * 2^RATIO_SCALE
-    const B3C = 0x0253   // 0.0363 * 2^LUX_SCALE
-    const M3C = 0x0363   // 0.0529 * 2^LUX_SCALE
-    const K4C = 0x010a   // 0.520 * 2^RATIO_SCALE
-    const B4C = 0x0282   // 0.0392 * 2^LUX_SCALE
-    const M4C = 0x03df   // 0.0605 * 2^LUX_SCALE
-    const K5C = 0x014d   // 0.65 * 2^RATIO_SCALE
-    const B5C = 0x0177   // 0.0229 * 2^LUX_SCALE
-    const M5C = 0x01dd   // 0.0291 * 2^LUX_SCALE
-    const K6C = 0x019a   // 0.80 * 2^RATIO_SCALE
-    const B6C = 0x0101   // 0.0157 * 2^LUX_SCALE
-    const M6C = 0x0127   // 0.0180 * 2^LUX_SCALE
-    const K7C = 0x029a   // 1.3 * 2^RATIO_SCALE
-    const B7C = 0x0037   // 0.00338 * 2^LUX_SCALE
-    const M7C = 0x002b   // 0.00260 * 2^LUX_SCALE
-    const K8C = 0x029a   // 1.3 * 2^RATIO_SCALE
-    const B8C = 0x0000   // 0.000 * 2^LUX_SCALE
-    const M8C = 0x0000 // 0.000 * 2^LUX_SCALE
+        constructor(address: number = 0x29) {
+            this.deviceAddress = address;
+            this.isInitialized = false;
+        }
 
-    //%block
-    export function init() {
-        writeRegister(TSL2561_Control, 0x03);  // POWER UP
-        writeRegister(TSL2561_Timing, 0x00);  //No High Gain (1x), integration time of 13ms
-        writeRegister(TSL2561_Interrupt, 0x00);
-        writeRegister(TSL2561_Control, 0x00);  // POWER Down
+        init() {
+            const sensorId = this.getSensorId();
+            if (sensorId !== 0xEBAA) {
+                return;
+            }
+
+            for (let i = 0; true; i++) {
+                if (this.readRegister(VL53L4CD_FIRMWARE_SYSTEM_STATUS, 8) == 0x3) {
+                    break;
+                }
+                if (i > 1000) {
+                    return;
+                }
+                basic.pause(1);
+            }
+
+            // load default setting
+            for (let addr = 0x2D; addr <= 0x87; addr++) {
+                this.writeRegister(addr, VL53L4CD_DEFAULT_CONFIGURATION[addr - 0x2D], 8)
+            }
+
+            // start VHV 
+            this.writeRegister(VL53L4CD_SYSTEM_START, 0x40, 8);
+            for (let i = 0; true; i++) {
+                if (this.checkForDataReady()) {
+                    break;
+                }
+                if (i > 1000) {
+                    return;
+                }
+                basic.pause(1);
+            }
+            this.clearInterrupt();
+            this.stopRanging();
+            this.writeRegister(VL53L4CD_VHV_CONFIG_TIMEOUT_MACROP_LOOP_BOUND, 0x09);
+            this.writeRegister(0x0B, 0);
+            this.writeRegister(0x0024, 0x500, 16);
+            // SetRangeTiming
+            this.setRangeTiming(50, 0);
+            this.isInitialized = true;
+        }
+
+        checkForDataReady() {
+            const muxCtrl = this.readRegister(VL53L4CD_GPIO_HV_MUX_CTRL, 8);
+            const pol = (muxCtrl & 0x10) >> 4;
+            const invertedPol = pol === 1 ? 0 : 1;
+            const tioHvStatus = this.readRegister(VL53L4CD_GPIO_TIO_HV_STATUS, 8);
+            return (tioHvStatus & 1) === invertedPol;
+        }
+
+        writeRegister(reg: number, val: number, n_of_bit = 8) {
+            const buffer = pins.createBuffer(2 + n_of_bit / 8);
+            buffer.setNumber(NumberFormat.UInt16BE, 0, reg);
+            switch (n_of_bit) {
+                case 16:
+                    buffer.setNumber(NumberFormat.UInt16BE, 2, val);
+                    break;
+                case 32:
+                    buffer.setNumber(NumberFormat.UInt32BE, 2, val);
+                    break;
+                default:
+                    buffer.setNumber(NumberFormat.UInt8BE, 2, val);
+                    break;
+            }
+            pins.i2cWriteBuffer(this.deviceAddress, buffer);
+        }
+
+        readRegister(reg: number, n_of_bit = 8): number {
+            // Write the register address as two bytes
+            pins.i2cWriteNumber(this.deviceAddress, reg, NumberFormat.UInt16BE);
+            switch (n_of_bit) {
+                case 16:
+                    return pins.i2cReadNumber(this.deviceAddress, NumberFormat.UInt16BE);
+                case 32:
+                    return pins.i2cReadNumber(this.deviceAddress, NumberFormat.UInt32BE);
+                default:
+                    return pins.i2cReadNumber(this.deviceAddress, NumberFormat.UInt8BE);
+            }
+        }
+
+        getSensorId(): number {
+            return this.readRegister(VL53L4CD_IDENTIFICATION_MODEL_ID, 16);
+        }
+        clearInterrupt() {
+            this.writeRegister(VL53L4CD_SYSTEM_INTERRUPT_CLEAR, 0x01);
+        }
+        stopRanging() {
+            this.writeRegister(VL53L4CD_SYSTEM_START, 0x01);
+        }
+        setRangeTiming(timing_budget_ms: number, inter_measurement_ms: number) {
+            let clock_pll, osc_freq, ms_byte, ls_byte, tmp;
+            let macro_period_us = 0;
+            let timing_budget_us = 0;
+            let inter_measurement_factor = 1.055;
+            osc_freq = this.readRegister(0x0006, 16);
+            if (osc_freq != 0) {
+                timing_budget_us = timing_budget_ms * 1000;
+                macro_period_us = 2304 * (0x40000000 / osc_freq) >> 6;
+
+            } else {
+                return;
+            }
+
+
+            if (timing_budget_ms < 10 || timing_budget_ms > 200) {
+                // Timing budget check validity
+                return;
+            } else if (inter_measurement_ms == 0) {
+                // Sensor runs in continuous mode
+                this.writeRegister(VL53L4CD_INTERMEASUREMENT_MS, 0, 32);
+                timing_budget_us -= 2500;
+            } else if (inter_measurement_ms > timing_budget_ms) {
+                // Sensor runs in autonomous low power mode
+                clock_pll = this.readRegister(VL53L4CD_RESULT_OSC_CALIBRATE_VAL, 16);
+                clock_pll = clock_pll & 0x3FF;
+                inter_measurement_factor = inter_measurement_factor * inter_measurement_ms * clock_pll;
+                this.writeRegister(VL53L4CD_INTERMEASUREMENT_MS, inter_measurement_factor, 32);
+                timing_budget_us -= 4300;
+                timing_budget_us /= 2;
+            } else {
+                return;
+            }
+
+            ms_byte = 0;
+            timing_budget_us = timing_budget_us << 12;
+            tmp = macro_period_us * 16;
+            ls_byte = ((timing_budget_us + ((tmp >> 6) >> 1)) / (tmp >> 6)) - 1;
+            while ((ls_byte & 0xFFFFFF00) > 0) {
+                ls_byte = ls_byte >> 1;
+                ms_byte++;
+            }
+            ms_byte = (ms_byte << 8) + (ls_byte & 0xFF);
+            this.writeRegister(VL53L4CD_RANGE_CONFIG_A, ms_byte, 16);
+            ms_byte = 0;
+            tmp = macro_period_us * 12
+            ls_byte = ((timing_budget_us + ((tmp >> 6) >> 1)) / (tmp >> 6)) - 1;
+            while ((ls_byte & 0xFFFFFF00) > 0) {
+                ls_byte = ls_byte >> 1;
+                ms_byte++;
+            }
+            ms_byte = (ms_byte << 8) + (ls_byte & 0xFF);
+            this.writeRegister(VL53L4CD_RANGE_CONFIG_B, ms_byte, 16);
+        }
+
+        startRanging() {
+            let tmp = this.readRegister(VL53L4CD_INTERMEASUREMENT_MS, 32);
+            if (tmp == 0) {
+                this.writeRegister(VL53L4CD_SYSTEM_START, 0x21);
+            } else {
+                this.writeRegister(VL53L4CD_SYSTEM_START, 0x40);
+            }
+        }
+        getResult() {
+            let results: any = {};
+            let temp_16, temp_8;
+            const statusRtn: number[] = [
+                255, 255, 255, 5, 2, 4, 1, 7, 3, 0,
+                255, 255, 9, 13, 255, 255, 255, 255, 10, 6,
+                255, 255, 11, 12
+            ];
+            temp_8 = this.readRegister(VL53L4CD_RESULT_RANGE_STATUS, 8);
+            temp_8 = temp_8 & 0x1F;
+            if (temp_8 < 24) {
+                temp_8 = statusRtn[temp_8];
+            }
+
+            results["range_status"] = temp_8;
+            temp_16 = this.readRegister(VL53L4CD_RESULT_SPAD_NB, 16);
+            results["number_of_spad"] = temp_16 / 256;
+            temp_16 = this.readRegister(VL53L4CD_RESULT_SIGNAL_RATE, 16);
+            results["signal_rate_kcps"] = temp_16 * 8;
+            temp_16 = this.readRegister(VL53L4CD_RESULT_AMBIENT_RATE, 16);
+            results["ambient_rate_kcps"] = temp_16 * 8;
+            temp_16 = this.readRegister(VL53L4CD_RESULT_SIGMA, 16);
+            results["sigma_mm"] = temp_16 / 4;
+            temp_16 = this.readRegister(VL53L4CD_RESULT_DISTANCE, 16);
+            results["distance_mm"] = temp_16;
+            results["signal_per_spad_kcps"] = results["signal_rate_kcps"] / results["number_of_spad"];
+            results["ambient_per_spad_kcps"] = results["ambient_rate_kcps"] / results["number_of_spad"];
+            basic.pause(5); // Wait a few ms to avoid too high polling
+            return results;
+        }
     }
 
-    function writeRegister(reg: number, val: number) {
-        const data = (reg << 8) | val;
-        pins.i2cWriteNumber(TSL2561_Address, data, NumberFormat.UInt16BE);
+    //% blockSetVariable=tof_sensor
+    //% blockId=vl53l4cd_create block="create Time of Flight sensor"
+    export function createInstance() {
+        const tof = new VL53L4CD();
+        tof.init();
+        return tof;
     }
 
-    function readRegister(reg: number): number {
-        pins.i2cWriteNumber(TSL2561_Address, reg, NumberFormat.UInt8LE, true);
-        return pins.i2cReadNumber(TSL2561_Address, NumberFormat.UInt8LE);
+    //% blockId=vl53l4cd_start_ranging
+    //% block="$tof_instance start"
+    //% tof_instance.defl=tof_sensor
+    //% tof_instance.shadow=variables_get
+    export function startRanging(tof_instance: VL53L4CD) {
+        tof_instance.startRanging();
     }
 
-    //%block
-    export function readVisibleLux() {
-        writeRegister(TSL2561_Control, 0x03);  // POWER UP
-        basic.pause(14);
-        let CH0_LOW = readRegister(TSL2561_Channal0L);
-        let CH0_HIGH = readRegister(TSL2561_Channal0H);
-        //read two bytes from registers 0x0E and 0x0F
-        let CH1_LOW = readRegister(TSL2561_Channal1L);
-        let CH1_HIGH = readRegister(TSL2561_Channal1H);
-        let ch0 = (CH0_HIGH << 8) | CH0_LOW;
-        let ch1 = (CH1_HIGH << 8) | CH1_LOW;
+    //% blockId=vl53l4cd_stop_ranging
+    //% block="$tof_instance stop"
+    //% tof_instance.defl=tof_sensor
+    //% tof_instance.shadow=variables_get
+    export function stopRanging(tof_instance: VL53L4CD) {
+        tof_instance.stopRanging();
+    }
 
-        writeRegister(TSL2561_Control, 0x00);  // POWER Down
-        if (ch1 == 0) {
+    //% blockId=vl53l4cd_get_value
+    //% block="%tof_instance | get value"
+    //% tof_instance.defl=tof_sensor
+    //% tof_instance.shadow=variables_get
+    export function check_obstacle(tof_instance: VL53L4CD) {
+        tof_instance.clearInterrupt();
+        let distance_mm = tof_instance.getResult()["distance_mm"];
+        if (distance_mm < 100 && distance_mm != 0) {
+            return 1;
+        } else {
             return 0;
         }
-        if (ch0 / ch1 < 2 && ch0 > 4900) {
-            return -1;  //ch0 out of range, but ch1 not. the lux is not valid in this situation.
-        }
-        return calculateLux(0, 0, 0, ch0, ch1);  //T package, no gain, 13ms
     }
 
-    function calculateLux(iGain: number, tInt: number, iType: number, ch0: number, ch1: number): number {
-        let chScale: number;
-        switch (tInt) {
-            case 0:  // 13.7 msec
-                chScale = CHSCALE_TINT0;
-                break;
-            case 1: // 101 msec
-                chScale = CHSCALE_TINT1;
-                break;
-            default: // assume no scaling
-                chScale = (1 << CH_SCALE);
-                break;
+    //% blockId=vl53l4cd_get_distance_mm
+    //% block="%tof_instance | get distance (in mm)"
+    //% tof_instance.defl=tof_sensor
+    //% tof_instance.shadow=variables_get
+    export function get_distance_mm(tof_instance: VL53L4CD) {
+        tof_instance.clearInterrupt();
+        tof_instance.startRanging();
+        let distance_mm = tof_instance.getResult()["distance_mm"];
+        tof_instance.stopRanging();
+        if (distance_mm != 0 ) {
+            return distance_mm;
+        } else {
+            return 1000;
         }
-        if (!iGain) chScale = chScale << 4; // scale 1X to 16X
-        // scale the channel values
-        let channel0 = (ch0 * chScale) >> CH_SCALE;
-        let channel1 = (ch1 * chScale) >> CH_SCALE;
-
-        let ratio1 = 0;
-        if (channel0 != 0) ratio1 = (channel1 << (RATIO_SCALE + 1)) / channel0;
-        // round the ratio value
-        let ratio = (ratio1 + 1) >> 1;
-        let b: number, m: number;
-        switch (iType) {
-            case 0: // T package
-                if ((ratio >= 0) && (ratio <= K1T))
-                { b = B1T; m = M1T; }
-                else if (ratio <= K2T)
-                { b = B2T; m = M2T; }
-                else if (ratio <= K3T)
-                { b = B3T; m = M3T; }
-                else if (ratio <= K4T)
-                { b = B4T; m = M4T; }
-                else if (ratio <= K5T)
-                { b = B5T; m = M5T; }
-                else if (ratio <= K6T)
-                { b = B6T; m = M6T; }
-                else if (ratio <= K7T)
-                { b = B7T; m = M7T; }
-                else if (ratio > K8T)
-                { b = B8T; m = M8T; }
-                break;
-            case 1:// CS package
-                if ((ratio >= 0) && (ratio <= K1C))
-                { b = B1C; m = M1C; }
-                else if (ratio <= K2C)
-                { b = B2C; m = M2C; }
-                else if (ratio <= K3C)
-                { b = B3C; m = M3C; }
-                else if (ratio <= K4C)
-                { b = B4C; m = M4C; }
-                else if (ratio <= K5C)
-                { b = B5C; m = M5C; }
-                else if (ratio <= K6C)
-                { b = B6C; m = M6C; }
-                else if (ratio <= K7C)
-                { b = B7C; m = M7C; }
-        }
-        let temp = ((channel0 * b) - (channel1 * m));
-        if (temp < 0) temp = 0;
-        temp += (1 << (LUX_SCALE - 1));
-        // strip off fractional portion
-        let lux = temp >> LUX_SCALE;
-        return (lux);
     }
 }

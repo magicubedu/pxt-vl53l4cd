@@ -1,6 +1,6 @@
-# pxt-digital-light-sensor
+# pxt-vl53l4cd
 
-Provides blocks for the TSL2561 light sensor.
+Provides blocks for the VL53L4CD Time-of-Flight sensor.
 
 ## License
 

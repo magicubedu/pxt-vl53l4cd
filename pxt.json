@@ -1,5 +1,5 @@
 {
-    "name": "pxt-digital-light-sensor",
+    "name": "pxt-vl53l4cd",
     "version": "0.0.0",
     "description": "",
     "dependencies": {

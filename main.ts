@@ -342,6 +342,7 @@ namespace VL53L4CD {
     //% block="$tof_instance start"
     //% tof_instance.defl=tof_sensor
     //% tof_instance.shadow=variables_get
+    //% advanced=true
     export function startRanging(tof_instance: VL53L4CD) {
         tof_instance.startRanging();
     }
@@ -350,6 +351,7 @@ namespace VL53L4CD {
     //% block="$tof_instance stop"
     //% tof_instance.defl=tof_sensor
     //% tof_instance.shadow=variables_get
+    //% advanced=true
     export function stopRanging(tof_instance: VL53L4CD) {
         tof_instance.stopRanging();
     }

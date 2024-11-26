@@ -185,6 +185,7 @@ namespace VL53L4CD {
             // SetRangeTiming
             this.setRangeTiming(50, 0);
             this.isInitialized = true;
+            this.startRanging();
         }
 
         checkForDataReady() {
@@ -353,17 +354,17 @@ namespace VL53L4CD {
         tof_instance.stopRanging();
     }
 
-    //% blockId=vl53l4cd_get_value
-    //% block="%tof_instance | get value"
+    //% blockId=vl53l4cd_has_object
+    //% block="%tof_instance | has object"
     //% tof_instance.defl=tof_sensor
     //% tof_instance.shadow=variables_get
-    export function check_obstacle(tof_instance: VL53L4CD) {
+    export function has_object(tof_instance: VL53L4CD):boolean {
         tof_instance.clearInterrupt();
         let distance_mm = tof_instance.getResult()["distance_mm"];
         if (distance_mm < 100 && distance_mm != 0) {
-            return 1;
+            return true;
         } else {
-            return 0;
+            return false;
         }
     }
 

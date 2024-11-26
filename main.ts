@@ -332,6 +332,7 @@ namespace VL53L4CD {
 
     //% blockSetVariable=tof_sensor
     //% blockId=vl53l4cd_create block="create Time of Flight sensor"
+    //% weight=999
     export function createInstance() {
         const tof = new VL53L4CD();
         tof.init();
